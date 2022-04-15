@@ -12,8 +12,8 @@ class Sobrevivente(models.Model):
 
     is_infected = models.BooleanField(default=False)
 
-    latitude = models.DecimalField(max_digits=5, decimal_places=5, validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)])
-    longitude = models.DecimalField(max_digits=5, decimal_places=5, validators=[MinValueValidator(-180.0), MaxValueValidator(180.0)])
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)])
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, validators=[MinValueValidator(-180.0), MaxValueValidator(180.0)])
 
 class Inventario(models.Model):
     agua = models.IntegerField(default=0, validators=[MinValueValidator(0)])
