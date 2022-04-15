@@ -32,3 +32,14 @@ def api_get_one_survivor(request, id, *args, **kwargs):
 
     data = SobreviventeSerializer(instance=obj).data
     return Response(data)
+
+@api_view(['PATCH'])
+def api_update_survivor_location(request, id, *args, **kwargs):
+    obj = get_object_or_404(Sobrevivente, pk=id)
+    
+    survivor = SobreviventeSerializer(instance=obj, data=request.data, partial=True)
+    
+    survivor.is_valid(raise_exception=True)
+    survivor.save()
+
+    return Response(survivor.validated_data, status=status.HTTP_200_OK)
