@@ -78,15 +78,10 @@ WSGI_APPLICATION = 'cfehome.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
         'NAME': 'mydb',
-
         'USER': 'apisobrevivente',
-
         'PASSWORD': '123456789',
-
         'HOST': 'localhost',
-
         'PORT': '5432',
     }
 }

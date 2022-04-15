@@ -1,35 +1,31 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+from sobreviventes.choices import SEXO_CHOICES
 # Create your models here.
 
 class Sobrevivente(models.Model):
-    id = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=100)
-    idade = models.IntegerField()
-    sexo = models.CharField(max_length=10, choices=[(1, 'Homem'), (2, 'Mulher')])
-    
-    # inventario = models.JSONField(default=dict)
-    
-    agua = models.IntegerField(default=0)
-    alimentacao = models.IntegerField(default=0)
-    medicacao = models.IntegerField(default=0)
-    municao = models.IntegerField(default=0)
-    
-    # localizacao = ArrayField(models.DecimalField(max_digits=5, decimal_places=5, default=0.0), size=2, default=list)
+    idade = models.IntegerField(validators=[MinValueValidator(0)])
+    sexo = models.CharField(max_length=10, choices=SEXO_CHOICES)
 
-    latitude = models.DecimalField(max_digits=5, decimal_places=5, default=0.0)
-    longitude = models.DecimalField(max_digits=5, decimal_places=5, default=0.0)
+    is_infected = models.BooleanField(default=False)
 
-    @property
-    def ultima_localizacao(self):
-        return (self.latitude, self.longitude)
-    
-    @property
-    def inventario(self):
-        return {
-            "agua": self.agua,
-            "alimentacao": self.alimentacao,
-            "medicacao": self.medicacao,
-            "municao": self.municao
-        }
+    latitude = models.DecimalField(max_digits=5, decimal_places=5, validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)])
+    longitude = models.DecimalField(max_digits=5, decimal_places=5, validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)])
+
+class Inventario(models.Model):
+    agua = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    alimentacao = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    medicacao = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    municao = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    sobrevivente = models.OneToOneField(Sobrevivente, related_name="inventario", on_delete=models.CASCADE)
+
+class Reports(models.Model):
+    reported = models.ForeignKey(Sobrevivente, related_name="reported", on_delete=models.CASCADE)
+    reporting = models.ForeignKey(Sobrevivente, related_name="reporting", on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(name="report", fields=['reported', 'reporting'])]
