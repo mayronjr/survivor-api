@@ -20,11 +20,8 @@ def api_add_survivor(request, *args, **kwargs):
 
 @api_view(['GET'])
 def api_get_all_survivor(request, *args, **kwargs):
-    instances = Sobrevivente.objects.all()    
-    data = []
-    
-    for i in range(len(instances)):
-        data.append(SobreviventeSerializer(instances[i]).data)
+    instances = Sobrevivente.objects.all()
+    data = SobreviventeSerializer(many=True, instance=instances).data
 
     return Response(data)
 
