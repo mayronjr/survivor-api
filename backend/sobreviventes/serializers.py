@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Inventario, Sobrevivente
+from .models import Inventario, Sobrevivente, Reports
 
 class InventarioCriacaoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,3 +35,8 @@ class SobreviventeSerializer(serializers.ModelSerializer):
         Inventario.objects.create(**inventario, sobrevivente=sobrevivente)
 
         return sobrevivente
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reports
+        fields = ['reported', 'reporting']
