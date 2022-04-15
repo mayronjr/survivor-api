@@ -40,3 +40,13 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reports
         fields = ['reported', 'reporting']
+
+class InventarioTradeSerializer(serializers.ModelSerializer):
+    sobrevivente = serializers.PrimaryKeyRelatedField(queryset=Sobrevivente.objects.all())
+    class Meta:
+        model = Inventario
+        fields = ['agua', 'alimentacao', 'medicacao', 'municao', 'sobrevivente']
+
+class SurvivorTradeSerializer(serializers.Serializer):
+    recebendo = InventarioTradeSerializer(partial=True)
+    entregando = InventarioTradeSerializer(partial=True)

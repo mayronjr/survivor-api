@@ -8,4 +8,5 @@ urlpatterns = [
     path('survivor/get-all', views.api_get_all_survivor),
     path('survivor/update-location/<int:id>', views.api_update_survivor_location),
     path('survivor/relate-infection', views.api_relate_infection),
+    path('trade', views.trade)
 ]
