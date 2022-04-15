@@ -1,6 +1,4 @@
-from django.http import HttpResponse, JsonResponse
-
-import json
+from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -28,4 +26,12 @@ def api_get_all_survivor(request, *args, **kwargs):
     for i in range(len(instances)):
         data.append(SobreviventeSerializer(instances[i]).data)
 
+    return Response(data)
+
+@api_view(['GET'])
+def api_get_one_survivor(request, id, *args, **kwargs):
+
+    obj = get_object_or_404(Sobrevivente, pk=id)
+
+    data = SobreviventeSerializer(instance=obj).data
     return Response(data)
