@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import Inventario, Sobrevivente, Reports
 
-class InventarioCriacaoSerializer(serializers.ModelSerializer):
+class InventarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventario
         fields=[
@@ -13,7 +13,7 @@ class InventarioCriacaoSerializer(serializers.ModelSerializer):
         ]
 
 class SobreviventeSerializer(serializers.ModelSerializer):
-    inventario = InventarioCriacaoSerializer()
+    inventario = InventarioSerializer()
     class Meta:
         model = Sobrevivente
         fields = [

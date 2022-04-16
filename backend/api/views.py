@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.db.utils import IntegrityError
+from django.db import transaction
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
 from sobreviventes.models import Sobrevivente, Reports
-from sobreviventes.serializers import SobreviventeSerializer, ReportSerializer, SurvivorTradeSerializer
+from sobreviventes.serializers import SobreviventeSerializer, ReportSerializer, SurvivorTradeSerializer, InventarioSerializer
 
 @api_view(['POST'])
 def api_add_survivor(request, *args, **kwargs):
@@ -82,27 +83,44 @@ def trade(request, *args, **kwargs):
     if calc_pontos(data['recebendo']) == calc_pontos(data['entregando']):
         
         sobrevivente_recebendo = data['recebendo'].get('sobrevivente').inventario
+        sobrevivente_entregando = data['entregando'].get('sobrevivente').inventario
+        
         if data['recebendo'].get('agua'):
             sobrevivente_recebendo.agua += data['recebendo'].get('agua')
+            sobrevivente_entregando.agua -= data['recebendo'].get('agua')
         if data['recebendo'].get('alimentacao'):
             sobrevivente_recebendo.alimentacao += data['recebendo'].get('alimentacao')
+            sobrevivente_entregando.alimentacao -= data['recebendo'].get('alimentacao')
         if data['recebendo'].get('medicacao'):
             sobrevivente_recebendo.medicacao += data['recebendo'].get('medicacao')
+            sobrevivente_entregando.medicacao -= data['recebendo'].get('medicacao')
         if data['recebendo'].get('municao'):
             sobrevivente_recebendo.municao += data['recebendo'].get('municao')
-        
-        sobrevivente_entregando = data['entregando'].get('sobrevivente').inventario
+            sobrevivente_entregando.municao -= data['recebendo'].get('municao')
+
         if data['entregando'].get('agua'):
+            sobrevivente_recebendo.agua += data['entregando'].get('agua')
             sobrevivente_entregando.agua -= data['entregando'].get('agua')
         if data['entregando'].get('alimentacao'):
+            sobrevivente_recebendo.alimentacao += data['entregando'].get('alimentacao')
             sobrevivente_entregando.alimentacao -= data['entregando'].get('alimentacao')
         if data['entregando'].get('medicacao'):
+            sobrevivente_recebendo.medicacao += data['entregando'].get('medicacao')
             sobrevivente_entregando.medicacao -= data['entregando'].get('medicacao')
         if data['entregando'].get('municao'):
+            sobrevivente_recebendo.municao += data['entregando'].get('municao')
             sobrevivente_entregando.municao -= data['entregando'].get('municao')
 
-        sobrevivente_entregando.save()
-        sobrevivente_recebendo.save()
+        instance = InventarioSerializer(instance=sobrevivente_entregando)
+        instance = InventarioSerializer(instance=instance, data=instance.data)
+        instance.is_valid(raise_exception=True)
+        instance = InventarioSerializer(instance=sobrevivente_recebendo)
+        instance = InventarioSerializer(instance=instance, data=instance.data)
+        instance.is_valid(raise_exception=True)
+
+        with transaction.atomic():
+            sobrevivente_entregando.save()
+            sobrevivente_recebendo.save()
 
         return Response({"message": "Troca feita"}, status=status.HTTP_200_OK)
     
