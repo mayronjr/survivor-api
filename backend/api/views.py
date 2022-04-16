@@ -179,7 +179,7 @@ def report(request, *args, **kwargs):
             "medicacao": quant_medicacao/not_infected_survivors.count(),
             "municao": quant_municao/not_infected_survivors.count(),
         },
-        "Lost Points": lost_points
+        "Pontos Perdidos": lost_points
     }
 
 
