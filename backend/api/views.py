@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.db.utils import IntegrityError
 from django.db import transaction
+from django.db.models import Sum
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from sobreviventes.models import Sobrevivente, Reports
+from sobreviventes.models import Sobrevivente, Reports, Inventario
 from sobreviventes.serializers import SobreviventeSerializer, ReportSerializer, SurvivorTradeSerializer, InventarioSerializer
 
 @api_view(['POST'])
@@ -137,3 +138,49 @@ def calc_pontos(inventory):
     if inventory.get('municao'):
         pontos += inventory.get('municao')
     return pontos
+
+@api_view(['GET'])
+def report(request, *args, **kwargs):
+    survivors = Sobrevivente.objects.all()
+    infected_survivors = survivors.filter(is_infected=True)
+    not_infected_survivors = survivors.filter(is_infected=False)
+
+    total_survivors = survivors.count()
+
+    if total_survivors == 0:
+        return Response({"message": "Banco de dados está vazio"}, status=status.HTTP_200_OK)
+
+    percentage_not_infected = not_infected_survivors.count()/total_survivors
+    percentage_infected = 1 - percentage_not_infected
+    
+    quant_agua = Inventario.objects.aggregate(Sum("agua"))['agua__sum']
+    quant_alimentacao = Inventario.objects.aggregate(Sum("alimentacao"))['alimentacao__sum']
+    quant_medicacao = Inventario.objects.aggregate(Sum("medicacao"))['medicacao__sum']
+    quant_municao = Inventario.objects.aggregate(Sum("municao"))['municao__sum']
+
+    print(infected_survivors.aggregate(Sum('inventario__agua')))
+    lost_points = infected_survivors.aggregate(Sum('inventario__agua'))['inventario__agua__sum'] * 4
+    lost_points += infected_survivors.aggregate(Sum('inventario__alimentacao'))['inventario__alimentacao__sum'] * 3
+    lost_points += infected_survivors.aggregate(Sum('inventario__medicacao'))['inventario__medicacao__sum'] * 2
+    lost_points += infected_survivors.aggregate(Sum('inventario__municao'))['inventario__municao__sum']
+    
+    reports = {
+        "Porcentagem não infectados": percentage_not_infected,
+        "Porcentagem infectados": percentage_infected,
+        "Média de itens por sobrevivente total": {
+            "agua": quant_agua/total_survivors,
+            "alimentacao": quant_alimentacao/total_survivors,
+            "medicacao": quant_medicacao/total_survivors,
+            "municao": quant_municao/total_survivors,
+        },
+        "Média de itens por sobrevivente não infectado": {
+            "agua": quant_agua/not_infected_survivors.count(),
+            "alimentacao": quant_alimentacao/not_infected_survivors.count(),
+            "medicacao": quant_medicacao/not_infected_survivors.count(),
+            "municao": quant_municao/not_infected_survivors.count(),
+        },
+        "Lost Points": lost_points
+    }
+
+
+    return Response(reports, status=status.HTTP_200_OK)
