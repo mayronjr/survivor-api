@@ -1,6 +1,6 @@
 # ZSSN (Rede Social de Sobrevivência Zumbi)
 
-    Criado com o objetivo de catalogar os sobreviventes do apocalipse zumbi e permitir o cambio de recursos entre humanos não infectados, assim como marcar quais sobreviventes foram infectados.    
+Criado com o objetivo de catalogar os sobreviventes do apocalipse zumbi e permitir o cambio de recursos entre humanos não infectados, assim como marcar quais sobreviventes foram infectados.    
 
 # Requerimentos
 
