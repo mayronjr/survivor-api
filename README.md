@@ -12,6 +12,7 @@ Criado com o objetivo de catalogar os sobreviventes do apocalipse zumbi e permit
 * django-cors-headers
 * psycopg2
 * django-environ
+* factory-boy
 * postgresql
 
 # Inicializando o Projeto
@@ -26,7 +27,7 @@ Para isso, abra a pasta do projeto e execute:
 No Windows, execute:
 
         python -m venv env
-        env/bin/activate
+        env\Scripts\activate
 
 ## Instalando dependencias
 
