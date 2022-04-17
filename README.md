@@ -44,15 +44,18 @@ Para mais informações sobre esse Banco de Dados, acesse [o site do postgreSQL]
 
 Após ajeitar o arquivo ```.env```, abra o shell no ambiente virtual, e execute o comando abaixo para configurar o banco de dados:
 
-        python backend\manage.py migrate
+        cd backend
+        python manage.py migrate
 
 ## Iniciando e testando a API
 
 Agora que temos o ambiente virtual de python e as dependências instaladas, podemos executar a API ou testá-la.
 
-Para executar a API temos o comando ```python backend\manage.py runserver```
+Para executar a API temos o comando ```python manage.py runserver```
 
-Para executar os testes da API temos o comando ```???????```
+Para executar os testes da API temos o comando ```python manage.py test```
+
+Para os testes, verifique se o seu usuário do PostgreSQL tem o poder de criar bancos de dados dentro do PostgreSQL.
 
 # End Points
 
