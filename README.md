@@ -42,6 +42,10 @@ Como usamos variaveis de ambiante, crie um arquivo ````.env```` na pasta ```back
 
 Para mais informações sobre esse Banco de Dados, acesse [o site do postgreSQL](https://www.postgresql.org/).
 
+Após ajeitar o arquivo ```.env```, abra o shell no ambiente virtual, e execute o comando abaixo para configurar o banco de dados:
+
+        python backend\manage.py migrate
+
 ## Iniciando e testando a API
 
 Agora que temos o ambiente virtual de python e as dependências instaladas, podemos executar a API ou testá-la.
