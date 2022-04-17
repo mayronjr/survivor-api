@@ -158,11 +158,13 @@ def report(request, *args, **kwargs):
     quant_medicacao = Inventario.objects.aggregate(Sum("medicacao"))['medicacao__sum']
     quant_municao = Inventario.objects.aggregate(Sum("municao"))['municao__sum']
 
-    print(infected_survivors.aggregate(Sum('inventario__agua')))
-    lost_points = infected_survivors.aggregate(Sum('inventario__agua'))['inventario__agua__sum'] * 4
-    lost_points += infected_survivors.aggregate(Sum('inventario__alimentacao'))['inventario__alimentacao__sum'] * 3
-    lost_points += infected_survivors.aggregate(Sum('inventario__medicacao'))['inventario__medicacao__sum'] * 2
-    lost_points += infected_survivors.aggregate(Sum('inventario__municao'))['inventario__municao__sum']
+    if infected_survivors.count() != 0:
+        lost_points = infected_survivors.aggregate(Sum('inventario__agua'))['inventario__agua__sum'] * 4
+        lost_points += infected_survivors.aggregate(Sum('inventario__alimentacao'))['inventario__alimentacao__sum'] * 3
+        lost_points += infected_survivors.aggregate(Sum('inventario__medicacao'))['inventario__medicacao__sum'] * 2
+        lost_points += infected_survivors.aggregate(Sum('inventario__municao'))['inventario__municao__sum']
+    else:
+        lost_points = 0
     
     reports = {
         "Porcentagem não infectados": percentage_not_infected,
